@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   frontend_app:
     build:
@@ -7,9 +5,15 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
+    env_file:
+      - ./.env.local
     environment:
       BACKEND_URL: ${BACKEND_URL}
-      NEXT_PUBLIC_BACKEND_URL: ${BACKEND_URL}
+      NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL}
+    depends_on:
+      - backend_app
+    networks:
+      - fullstack-network
 
   backend_app:
     build:
@@ -19,5 +23,32 @@ services:
       - "8000:8000"
     env_file:
       - ../sentiment-analysis-back-end/.env
-    # environment:
-    #   FRONTEND_URL: ${FRONTEND_URL}
+    environment:
+      FRONTEND_URL: ${FRONTEND_URL}
+      DATABASE_HOST: database
+      DATABASE_URL: postgres://postgres:123456@$database:5432/sentiment_analysis_db
+    depends_on:
+      - database
+    networks:
+      - fullstack-network
+
+  database:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: sentiment_analysis_db
+      DATABASE_HOST: database
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - fullstack-network
+
+networks:
+  fullstack-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
