@@ -5,12 +5,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Zap, Loader2, AlertTriangle, Smile, Frown, Meh } from "lucide-react";
+import useAuth from "@/hooks/useAuth";
 
-// --- Utility Functions ---
+const BACKEND_URL =
+	process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
 
-/**
- * Returns a score-based label and color/icon for the sentiment.
- */
 const getSentimentData = (sentiment: string, score: number) => {
 	const resultData = {
 		positive: {
@@ -33,15 +32,9 @@ const getSentimentData = (sentiment: string, score: number) => {
 		},
 	};
 
-	// Determine sentiment based on model result
 	const key = sentiment.toLowerCase() as keyof typeof resultData;
 	return resultData[key] || resultData.neutral;
 };
-
-// --- Main Component ---
-
-const BACKEND_URL =
-	process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
 
 export default function SentimentPage() {
 	const [text, setText] = useState("");
@@ -51,8 +44,14 @@ export default function SentimentPage() {
 		score: number;
 	} | null>(null);
 	const [error, setError] = useState<string | null>(null);
+	const isAuthenticated = useAuth();
 
 	const analyze = async () => {
+		if (!isAuthenticated) {
+			setError("You must be authenticated to analyze text.");
+			return;
+		}
+
 		setLoading(true);
 		setError(null);
 		setResult(null);
@@ -78,12 +77,31 @@ export default function SentimentPage() {
 
 			const data = await res.json();
 			setResult(data);
-		} catch (err: any) {
-			setError(err.message || "An unknown error occurred.");
+		} catch (err: unknown) {
+			if (err instanceof Error) {
+				setError(err.message);
+			} else if (typeof err === "string") {
+				setError(err);
+			} else {
+				setError("An unknown error occurred.");
+			}
+		} finally {
+			setLoading(false);
 		}
-
-		setLoading(false);
 	};
+
+	if (isAuthenticated === null) {
+		return (
+			<div className="flex justify-center items-center min-h-screen bg-gray-50">
+				<Loader2 className="h-8 w-8 text-blue-600 animate-spin mr-2" />
+				<span className="text-xl text-gray-600">Loading Analyzing...</span>
+			</div>
+		);
+	}
+
+	if (isAuthenticated === false) {
+		return null;
+	}
 
 	const sentimentData = result
 		? getSentimentData(result.result, result.score)
