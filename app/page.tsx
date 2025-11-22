@@ -8,11 +8,11 @@ import {
 	Shield,
 	Sparkles,
 	TrendingUp,
-	Star,
 	Quote,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import homepage from "../public/homepage.png";
 
 // --- Utility Feature Data ---
 const features = [
@@ -49,12 +49,14 @@ const steps = [
 
 const testimonials = [
 	{
+		id: 1,
 		quote:
 			"This tool cut my feedback analysis time by 70%. Incredibly fast and surprisingly accurate!",
 		name: "Sarah K.",
 		title: "Marketing Manager",
 	},
 	{
+		id: 2,
 		quote:
 			"The interface is so clean. It's the best sentiment tool I've used for quick content checks.",
 		name: "Mark T.",
@@ -96,18 +98,15 @@ export default function HomePage() {
 						</Button>
 					</Link>
 
-					<div className="mt-16 relative">
-						{/* Mockup/Visual Element */}
-						<div className="w-full h-80 bg-gray-100 rounded-xl shadow-2xl border-4 border-blue-200 overflow-hidden flex items-center justify-center">
-							<span className="text-blue-500 text-xl font-medium">
-								[Insert Screenshot/Mockup of Sentiment Tool Here]
-							</span>
+					<div className="mt-16 relative w-full h-96">
+						<div className="w-full h-96 bg-gray-100 rounded-xl shadow-2xl border-4 border-blue-200 overflow-hidden flex items-center justify-center relative">
+							<Image src={homepage} alt="home page image" fill />
 						</div>
 					</div>
 				</div>
 			</section>
 			{/* 2. FEATURES SECTION */}
-			<section className="px-6 py-20 bg-gray-50">
+			<section className="px-6 bg-gray-50">
 				<div className="max-w-6xl mx-auto">
 					<h2 className="text-3xl font-bold text-gray-800 text-center mb-12">
 						Why Choose Our Analyzer?
@@ -146,18 +145,18 @@ export default function HomePage() {
 					</h2>
 
 					<div className="grid md:grid-cols-2 gap-8">
-						{testimonials.map((testimonial, index) => (
+						{testimonials.map((testimonial) => (
 							<Card
-								key={index}
+								key={testimonial.id}
 								className="p-8 shadow-2xl border-none bg-blue-50"
 							>
 								<Quote className="h-6 w-6 text-blue-400 mb-4" />
 								<p className="text-lg italic text-gray-700">
-									"{testimonial.quote}"
+									&quot;{testimonial.quote}&quot;
 								</p>
 								<div className="flex mt-6 items-center">
 									{/* Avatar Placeholder */}
-									<div className="h-10 w-10 bg-blue-200 rounded-full mr-4 flex-shrink-0"></div>
+									<div className="h-10 w-10 bg-blue-200 rounded-full mr-4 shrink-0"></div>
 									<div>
 										<p className="font-semibold text-gray-900">
 											{testimonial.name}
@@ -182,7 +181,7 @@ export default function HomePage() {
 						{steps.map((step, index) => (
 							<li key={index} className="flex items-start">
 								{/* Step Circle & Line */}
-								<div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-600 text-white font-bold text-lg flex items-center justify-center shadow-md mr-6 relative">
+								<div className="shrink-0 w-10 h-10 rounded-full bg-blue-600 text-white font-bold text-lg flex items-center justify-center shadow-md mr-6 relative">
 									{index + 1}
 									{index < steps.length - 1 && (
 										<div className="absolute left-1/2 top-full h-12 w-0.5 bg-blue-200 transform -translate-x-1/2"></div>
