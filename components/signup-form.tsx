@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, RegisterOptions, FieldValues } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -10,14 +10,18 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import {
-	Field,
-	FieldGroup,
-	FieldLabel,
-	// FieldDescription,
-} from "@/components/ui/field";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import {
+	User,
+	Mail,
+	Lock,
+	AtSign,
+	Loader2,
+	CheckCircle,
+	AlertTriangle,
+} from "lucide-react";
 
 interface Data {
 	name: string;
@@ -26,13 +30,68 @@ interface Data {
 	password: string;
 }
 
+// Custom Input Field Component with Icon for reuse and clarity
+interface FieldWithIconProps {
+	id: keyof Data;
+	label: string;
+	placeholder: string;
+	type?: string;
+	icon: React.ElementType;
+	// Passing the register function itself
+	register: ReturnType<typeof useForm<Data>>["register"];
+	// Added rules for react-hook-form validation
+	rules?: RegisterOptions<Data, keyof Data>;
+	error: string | undefined;
+}
+
+const FieldWithIcon = ({
+	id,
+	label,
+	placeholder,
+	type = "text",
+	icon: Icon,
+	register,
+	rules, // Accept rules prop
+	error,
+}: FieldWithIconProps) => {
+	return (
+		<Field>
+			<FieldLabel htmlFor={id} className="font-medium text-gray-700">
+				{label}
+			</FieldLabel>
+			<div className="relative">
+				<Icon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+				<Input
+					id={id}
+					type={type}
+					placeholder={placeholder}
+					className={cn(
+						"pl-10 pr-4 h-11 border-gray-300 focus:ring-blue-500 focus:border-blue-500 transition-colors",
+						error && "border-red-500 focus:border-red-500 focus:ring-red-500"
+					)}
+					// FIX: Spread the result of register(id, rules) onto the Input.
+					// This correctly applies the required props (ref, name, onBlur, onChange)
+					{...register(id, rules)}
+				/>
+			</div>
+			{error && (
+				<p className="text-sm text-red-600 mt-1 flex items-center space-x-1">
+					<AlertTriangle className="h-4 w-4 inline-block flex-shrink-0" />
+					<span>{error}</span>
+				</p>
+			)}
+		</Field>
+	);
+};
+
 export function SignupForm() {
 	const {
 		register,
 		handleSubmit,
-		setError,
+		// setError is typically for manual backend error handling
 		formState: { errors, isSubmitting },
 	} = useForm<Data>();
+
 	const [message, setMessage] = useState<{
 		type: "success" | "error";
 		text: string;
@@ -42,7 +101,7 @@ export function SignupForm() {
 		setMessage(null);
 
 		try {
-			const response = await fetch("api/auth/register", {
+			const response = await fetch("/api/auth/register", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -57,16 +116,15 @@ export function SignupForm() {
 					errorData?.message ||
 					`HTTP error! status: ${response.status}`;
 
-				// Handle field-specific errors if the backend returns them in a known format
-				// For now, we'll assume a general error or a 'detail' string
+				// Removed the commented out setError example for cleaner code
 				throw new Error(errorMessage);
 			}
 
-			const result = await response.json();
 			setMessage({
 				type: "success",
 				text: "Account created successfully! You can now log in.",
 			});
+			// Optionally redirect here
 		} catch (error: any) {
 			setMessage({
 				type: "error",
@@ -75,112 +133,144 @@ export function SignupForm() {
 		}
 	}
 
+	// Define validation rules once
+	// Use FieldValues type for better compatibility with RegisterOptions
+	const validationRules: Record<
+		keyof Data,
+		RegisterOptions<Data, keyof Data>
+	> = {
+		name: { required: "Full name is required" },
+		username: { required: "Username is required" },
+		email: {
+			required: "Email is required",
+			pattern: {
+				value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+				message: "Invalid email address",
+			},
+		},
+		password: {
+			required: "Password is required",
+			minLength: {
+				value: 8,
+				message: "Password must be at least 8 characters",
+			},
+		},
+	};
+
 	return (
-		<div className={cn("flex flex-col gap-6")}>
-			<Card>
-				<CardHeader className="text-center">
-					<CardTitle className="text-xl">Create your account</CardTitle>
-					<CardDescription>Enter your info below.</CardDescription>
+		<div
+			className={cn(
+				"flex items-center justify-center min-h-screen bg-gray-50 p-4"
+			)}
+		>
+			<Card className="w-full max-w-lg shadow-2xl border-none rounded-xl">
+				<CardHeader className="text-center p-6">
+					<User className="h-10 w-10 mx-auto mb-2 text-blue-600" />
+					<CardTitle className="text-3xl font-bold text-gray-900">
+						Join the Platform
+					</CardTitle>
+					<CardDescription className="text-gray-500 mt-1">
+						Create your account in seconds.
+					</CardDescription>
 				</CardHeader>
-				<CardContent>
-					<form onSubmit={handleSubmit(onSubmit)}>
-						<FieldGroup>
-							<Field>
-								<FieldLabel htmlFor="name">Full Name</FieldLabel>
-								<Input
-									id="name"
-									{...register("name", { required: "Full name is required" })}
-									placeholder="Add your full name"
-								/>
-								{errors.name && (
-									<p className="text-sm text-red-500 mt-1">
-										{errors.name.message}
-									</p>
-								)}
-							</Field>
 
-							<Field>
-								<FieldLabel htmlFor="username">Username</FieldLabel>
-								<Input
-									id="username"
-									{...register("username", {
-										required: "Username is required",
-									})}
-									placeholder="Add your username"
-								/>
-								{errors.username && (
-									<p className="text-sm text-red-500 mt-1">
-										{errors.username.message}
-									</p>
-								)}
-							</Field>
+				<CardContent className="p-6 pt-0">
+					{/* Global Message/Feedback Box */}
+					{message && (
+						<div
+							className={cn(
+								"mb-6 p-4 rounded-lg flex items-center space-x-3 transition-opacity duration-300 border",
+								message.type === "success"
+									? "bg-green-50 border-green-200 text-green-700"
+									: "bg-red-50 border-red-200 text-red-700"
+							)}
+						>
+							{message.type === "success" ? (
+								<CheckCircle className="h-5 w-5 flex-shrink-0" />
+							) : (
+								<AlertTriangle className="h-5 w-5 flex-shrink-0" />
+							)}
+							<p className="text-sm font-medium">{message.text}</p>
+						</div>
+					)}
 
-							<Field>
-								<FieldLabel htmlFor="email">Email</FieldLabel>
-								<Input
-									id="email"
-									{...register("email", {
-										required: "Email is required",
-										pattern: {
-											value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-											message: "Invalid email address",
-										},
-									})}
-									type="email"
-									placeholder="Add your email address"
-								/>
-								{errors.email && (
-									<p className="text-sm text-red-500 mt-1">
-										{errors.email.message}
-									</p>
-								)}
-							</Field>
+					<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+						<FieldGroup className="space-y-4">
+							{/* Field 1: Full Name (Cleaned up duplicates) */}
+							<FieldWithIcon
+								id="name"
+								label="Full Name"
+								placeholder="Your full name"
+								icon={User}
+								register={register}
+								rules={validationRules.name}
+								error={errors.name?.message}
+							/>
 
-							<Field>
-								<FieldLabel htmlFor="password">Password</FieldLabel>
-								<Input
-									id="password"
-									{...register("password", {
-										required: "Password is required",
-										minLength: {
-											value: 8,
-											message: "Password must be at least 8 characters",
-										},
-									})}
-									type="password"
-								/>
-								{errors.password && (
-									<p className="text-sm text-red-500 mt-1">
-										{errors.password.message}
-									</p>
-								)}
-							</Field>
+							{/* Field 2: Username */}
+							<FieldWithIcon
+								id="username"
+								label="Username"
+								placeholder="Choose a unique username"
+								icon={AtSign}
+								register={register}
+								rules={validationRules.username}
+								error={errors.username?.message}
+							/>
 
-							<Field>
-								<Button
-									type="submit"
-									disabled={isSubmitting}
-									className="w-full"
+							{/* Field 3: Email */}
+							<FieldWithIcon
+								id="email"
+								label="Email"
+								placeholder="name@example.com"
+								type="email"
+								icon={Mail}
+								register={register}
+								rules={validationRules.email}
+								error={errors.email?.message}
+							/>
+
+							{/* Field 4: Password */}
+							<FieldWithIcon
+								id="password"
+								label="Password"
+								placeholder="Minimum 8 characters"
+								type="password"
+								icon={Lock}
+								register={register}
+								rules={validationRules.password}
+								error={errors.password?.message}
+							/>
+
+							{/* Login/Signup Action Button */}
+							<Button
+								type="submit"
+								disabled={isSubmitting}
+								className="w-full h-11 text-lg font-semibold bg-blue-600 hover:bg-blue-700 transition-colors duration-200 mt-4"
+							>
+								{isSubmitting ? (
+									<div className="flex items-center space-x-2">
+										<Loader2 className="h-5 w-5 animate-spin" />
+										<span>Creating Account...</span>
+									</div>
+								) : (
+									"Create Account"
+								)}
+							</Button>
+
+							<p className="text-center text-sm text-gray-500 pt-2">
+								Already have an account?{" "}
+								<a
+									href="/login"
+									className="text-blue-600 font-medium hover:text-blue-700 transition-colors"
 								>
-									{isSubmitting ? "Creating Account..." : "Create Account"}
-								</Button>
-							</Field>
+									Log in
+								</a>
+							</p>
 						</FieldGroup>
 					</form>
 				</CardContent>
 			</Card>
-			{message && (
-				<div
-					className={cn(
-						"p-4 rounded-md text-sm",
-						message.type === "success"
-							? "bg-green-100 text-green-800"
-							: "bg-red-100 text-red-800"
-					)}
-				>
-					{message.text}
-				</div>
-			)}
 		</div>
 	);
 }
