@@ -11,11 +11,11 @@ import {
 } from "@/components/ui/card";
 import { FieldDescription, FieldGroup } from "@/components/ui/field";
 import { useForm, SubmitHandler, RegisterOptions } from "react-hook-form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FieldWithIcon } from "./signup-form";
-
 import { Lock, AtSign } from "lucide-react";
+import useAuth from "@/hooks/useAuth";
 
 const BACKEND_URL =
 	process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
@@ -34,13 +34,18 @@ export function LoginForm({
 		handleSubmit,
 		formState: { errors, isSubmitting },
 	} = useForm<LoginData>();
-
 	const [message, setMessage] = useState<{
 		type: "success" | "error";
 		text: string;
 	} | null>(null);
-
+	const isAuthenticated = useAuth();
 	const router = useRouter();
+
+	useEffect(() => {
+		if (isAuthenticated) {
+			router.replace("/");
+		}
+	}, [isAuthenticated, router]);
 
 	const onSubmit: SubmitHandler<LoginData> = async (data) => {
 		setMessage(null);
@@ -60,17 +65,16 @@ export function LoginForm({
 				throw new Error(error?.detail || error?.message || "Login failed");
 			}
 
-			const result = await response.json();
-			const token = result.access_token || result.token;
-
-			if (token) {
-				localStorage.setItem("token", token);
-				setMessage({
-					type: "success",
-					text: "Login successful! Redirecting...",
-				});
-				setTimeout(() => router.push("/"), 1200);
+			if (response.ok) {
+				const result = await response.json();
+				localStorage.setItem("token", result.access_token);
+				router.replace("/sentiment");
 			}
+
+			setMessage({
+				type: "success",
+				text: "Login successful. Redirecting...",
+			});
 		} catch (error: unknown) {
 			setMessage({
 				type: "error",
@@ -78,6 +82,10 @@ export function LoginForm({
 			});
 		}
 	};
+
+	if (isAuthenticated) {
+		return null;
+	}
 
 	return (
 		<div
