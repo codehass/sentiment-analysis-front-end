@@ -40,11 +40,14 @@ const features = [
 ];
 
 const steps = [
-	"Sign up to create your free account.",
-	"Log in to access your personal dashboard.",
-	"Navigate to the 'Analyze' section.",
-	"Paste or type the text you wish to analyze.",
-	"Get an instant score and classification (Positive/Negative/Neutral).",
+	{ id: 1, text: "Sign up to create your free account." },
+	{ id: 2, text: "Log in to access your personal dashboard." },
+	{ id: 3, text: "Navigate to the 'Analyze' section." },
+	{ id: 4, text: "Paste or type the text you wish to analyze." },
+	{
+		id: 5,
+		text: "Get an instant score and classification (Positive/Negative/Neutral).",
+	},
 ];
 
 const testimonials = [
@@ -179,7 +182,7 @@ export default function HomePage() {
 
 					<ol className="relative space-y-12 max-w-3xl mx-auto">
 						{steps.map((step, index) => (
-							<li key={index} className="flex items-start">
+							<li key={step.id} className="flex items-start">
 								{/* Step Circle & Line */}
 								<div className="shrink-0 w-10 h-10 rounded-full bg-blue-600 text-white font-bold text-lg flex items-center justify-center shadow-md mr-6 relative">
 									{index + 1}
@@ -193,7 +196,7 @@ export default function HomePage() {
 									<h3 className="text-xl font-semibold text-gray-800">
 										Step {index + 1}
 									</h3>
-									<p className="mt-1 text-gray-600 text-lg">{step}</p>
+									<p className="mt-1 text-gray-600 text-lg">{step.text}</p>
 								</div>
 							</li>
 						))}
@@ -205,7 +208,7 @@ export default function HomePage() {
 			<section className="px-6 py-20 bg-blue-600 text-white shadow-inner">
 				<div className="max-w-3xl mx-auto text-center">
 					<h2 className="text-4xl font-extrabold mb-4">
-						Ready to See Your Text's True Tone?
+						Ready to See Your Text&apos;s True Tone?
 					</h2>
 					<p className="text-xl opacity-90 mb-8">
 						Unlock deeper insights with our high-accuracy AI model today. No

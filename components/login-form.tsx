@@ -9,18 +9,18 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import {
-	Field,
-	FieldDescription,
-	FieldGroup,
-	FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { FieldDescription, FieldGroup } from "@/components/ui/field";
+import { useForm, SubmitHandler, RegisterOptions } from "react-hook-form";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { FieldWithIcon } from "./signup-form";
 
-type Data = {
+import { Lock, AtSign } from "lucide-react";
+
+const BACKEND_URL =
+	process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+
+type LoginData = {
 	username: string;
 	password: string;
 };
@@ -32,8 +32,9 @@ export function LoginForm({
 	const {
 		register,
 		handleSubmit,
-		formState: { isSubmitting },
-	} = useForm<Data>();
+		formState: { errors, isSubmitting },
+	} = useForm<LoginData>();
+
 	const [message, setMessage] = useState<{
 		type: "success" | "error";
 		text: string;
@@ -41,14 +42,14 @@ export function LoginForm({
 
 	const router = useRouter();
 
-	const onSubmit: SubmitHandler<Data> = async (data) => {
+	const onSubmit: SubmitHandler<LoginData> = async (data) => {
 		setMessage(null);
 		const formData = new URLSearchParams();
 		formData.append("username", data.username);
 		formData.append("password", data.password);
 
 		try {
-			const response = await fetch("/api/auth/login", {
+			const response = await fetch(`${BACKEND_URL}/auth/login`, {
 				method: "POST",
 				headers: { "Content-Type": "application/x-www-form-urlencoded" },
 				body: formData,
@@ -70,10 +71,10 @@ export function LoginForm({
 				});
 				setTimeout(() => router.push("/"), 1200);
 			}
-		} catch (error: any) {
+		} catch (error: unknown) {
 			setMessage({
 				type: "error",
-				text: error.message || "Unexpected error",
+				text: (error as Error).message || "Unexpected error",
 			});
 		}
 	};
@@ -81,7 +82,7 @@ export function LoginForm({
 	return (
 		<div
 			className={cn(
-				"flex items-center justify-center min-h-screen bg-gradient-to-b from-slate-50 to-slate-200 p-4",
+				"flex items-center justify-center min-h-screen bg-linear-to-b from-slate-50 to-slate-200 p-4",
 				className
 			)}
 			{...props}
@@ -99,34 +100,26 @@ export function LoginForm({
 				<CardContent>
 					<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 						<FieldGroup className="space-y-4">
-							<Field>
-								<FieldLabel
-									className="font-medium text-slate-700"
-									htmlFor="username"
-								>
-									Username
-								</FieldLabel>
-								<Input
-									id="username"
-									{...register("username", { required: true })}
-									placeholder="Enter your username"
-								/>
-							</Field>
+							<FieldWithIcon<LoginData>
+								id="username"
+								label="Username"
+								placeholder="Choose a unique username"
+								icon={AtSign}
+								register={register}
+								rules={validationRules.username}
+								error={errors.username?.message}
+							/>
 
-							<Field>
-								<FieldLabel
-									className="font-medium text-slate-700"
-									htmlFor="password"
-								>
-									Password
-								</FieldLabel>
-								<Input
-									id="password"
-									type="password"
-									{...register("password", { required: true })}
-									placeholder="••••••••"
-								/>
-							</Field>
+							<FieldWithIcon<LoginData>
+								id="password"
+								label="Password"
+								placeholder="Minimum 8 characters"
+								type="password"
+								icon={Lock}
+								register={register}
+								rules={validationRules.password}
+								error={errors.password?.message}
+							/>
 
 							<Button
 								type="submit"
@@ -145,7 +138,7 @@ export function LoginForm({
 							</Button>
 
 							<FieldDescription className="text-center text-sm text-slate-500">
-								Don't have an account?{" "}
+								Don&apos;t have an account?{" "}
 								<a href="/register" className="text-blue-600 underline">
 									Sign up
 								</a>
@@ -170,3 +163,19 @@ export function LoginForm({
 		</div>
 	);
 }
+
+export const validationRules: Record<
+	keyof LoginData,
+	RegisterOptions<LoginData>
+> = {
+	username: {
+		required: "Username is required",
+	},
+	password: {
+		required: "Password is required",
+		minLength: {
+			value: 8,
+			message: "Password must be at least 8 characters",
+		},
+	},
+};

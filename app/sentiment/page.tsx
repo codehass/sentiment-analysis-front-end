@@ -40,6 +40,9 @@ const getSentimentData = (sentiment: string, score: number) => {
 
 // --- Main Component ---
 
+const BACKEND_URL =
+	process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+
 export default function SentimentPage() {
 	const [text, setText] = useState("");
 	const [loading, setLoading] = useState(false);
@@ -57,7 +60,7 @@ export default function SentimentPage() {
 		try {
 			const token = localStorage.getItem("token");
 
-			const res = await fetch("/api/predict", {
+			const res = await fetch(`${BACKEND_URL}/predict`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -150,7 +153,7 @@ export default function SentimentPage() {
 							>
 								<div className="flex items-center justify-between">
 									<div className="flex items-center space-x-3">
-										<sentimentData.icon className="h-8 w-8 flex-shrink-0" />
+										<sentimentData.icon className="h-8 w-8 shrink-0" />
 										<div>
 											<h3 className="text-2xl font-bold capitalize">
 												{sentimentData.label} Sentiment

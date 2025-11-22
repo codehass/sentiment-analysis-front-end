@@ -1,6 +1,12 @@
 "use client";
 
-import { useForm, RegisterOptions, FieldValues } from "react-hook-form";
+import {
+	useForm,
+	RegisterOptions,
+	UseFormRegister,
+	Path,
+	FieldValues,
+} from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -29,31 +35,27 @@ interface Data {
 	email: string;
 	password: string;
 }
-
-// Custom Input Field Component with Icon for reuse and clarity
-interface FieldWithIconProps {
-	id: keyof Data;
+interface FieldWithIconProps<T extends FieldValues> {
+	id: Path<T>;
 	label: string;
 	placeholder: string;
 	type?: string;
 	icon: React.ElementType;
-	// Passing the register function itself
-	register: ReturnType<typeof useForm<Data>>["register"];
-	// Added rules for react-hook-form validation
-	rules?: RegisterOptions<Data, keyof Data>;
+	register: UseFormRegister<T>;
+	rules?: RegisterOptions<T, Path<T>>;
 	error: string | undefined;
 }
 
-const FieldWithIcon = ({
+export const FieldWithIcon = <T extends FieldValues>({
 	id,
 	label,
 	placeholder,
 	type = "text",
 	icon: Icon,
 	register,
-	rules, // Accept rules prop
+	rules,
 	error,
-}: FieldWithIconProps) => {
+}: FieldWithIconProps<T>) => {
 	return (
 		<Field>
 			<FieldLabel htmlFor={id} className="font-medium text-gray-700">
@@ -69,14 +71,12 @@ const FieldWithIcon = ({
 						"pl-10 pr-4 h-11 border-gray-300 focus:ring-blue-500 focus:border-blue-500 transition-colors",
 						error && "border-red-500 focus:border-red-500 focus:ring-red-500"
 					)}
-					// FIX: Spread the result of register(id, rules) onto the Input.
-					// This correctly applies the required props (ref, name, onBlur, onChange)
 					{...register(id, rules)}
 				/>
 			</div>
 			{error && (
 				<p className="text-sm text-red-600 mt-1 flex items-center space-x-1">
-					<AlertTriangle className="h-4 w-4 inline-block flex-shrink-0" />
+					<AlertTriangle className="h-4 w-4 inline-block shrink-0" />
 					<span>{error}</span>
 				</p>
 			)}
@@ -84,11 +84,13 @@ const FieldWithIcon = ({
 	);
 };
 
+const BACKEND_URL =
+	process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+
 export function SignupForm() {
 	const {
 		register,
 		handleSubmit,
-		// setError is typically for manual backend error handling
 		formState: { errors, isSubmitting },
 	} = useForm<Data>();
 
@@ -101,7 +103,7 @@ export function SignupForm() {
 		setMessage(null);
 
 		try {
-			const response = await fetch("/api/auth/register", {
+			const response = await fetch(`${BACKEND_URL}/auth/register`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -125,46 +127,23 @@ export function SignupForm() {
 				text: "Account created successfully! You can now log in.",
 			});
 			// Optionally redirect here
-		} catch (error: any) {
+		} catch (error) {
 			setMessage({
 				type: "error",
-				text: error.message || "An unexpected error occurred.",
+				text:
+					error instanceof Error
+						? error.message
+						: "An unexpected error occurred.",
 			});
 		}
 	}
 
-	// Define validation rules once
-	// Use FieldValues type for better compatibility with RegisterOptions
-	const validationRules: Record<
-		keyof Data,
-		RegisterOptions<Data, keyof Data>
-	> = {
-		name: { required: "Full name is required" },
-		username: { required: "Username is required" },
-		email: {
-			required: "Email is required",
-			pattern: {
-				value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-				message: "Invalid email address",
-			},
-		},
-		password: {
-			required: "Password is required",
-			minLength: {
-				value: 8,
-				message: "Password must be at least 8 characters",
-			},
-		},
-	};
-
 	return (
 		<div
-			className={cn(
-				"flex items-center justify-center min-h-screen bg-gray-50 p-4"
-			)}
+			className={cn("flex items-center justify-center min-h-screen bg-gray-50")}
 		>
 			<Card className="w-full max-w-lg shadow-2xl border-none rounded-xl">
-				<CardHeader className="text-center p-6">
+				<CardHeader className="text-center p-2">
 					<User className="h-10 w-10 mx-auto mb-2 text-blue-600" />
 					<CardTitle className="text-3xl font-bold text-gray-900">
 						Join the Platform
@@ -186,9 +165,9 @@ export function SignupForm() {
 							)}
 						>
 							{message.type === "success" ? (
-								<CheckCircle className="h-5 w-5 flex-shrink-0" />
+								<CheckCircle className="h-5 w-5 shrink-0" />
 							) : (
-								<AlertTriangle className="h-5 w-5 flex-shrink-0" />
+								<AlertTriangle className="h-5 w-5 shrink-0" />
 							)}
 							<p className="text-sm font-medium">{message.text}</p>
 						</div>
@@ -274,3 +253,27 @@ export function SignupForm() {
 		</div>
 	);
 }
+
+// Define validation rules once
+// Use FieldValues type for better compatibility with RegisterOptions
+export const validationRules: Record<
+	keyof Data,
+	RegisterOptions<Data, keyof Data>
+> = {
+	name: { required: "Full name is required" },
+	username: { required: "Username is required" },
+	email: {
+		required: "Email is required",
+		pattern: {
+			value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+			message: "Invalid email address",
+		},
+	},
+	password: {
+		required: "Password is required",
+		minLength: {
+			value: 8,
+			message: "Password must be at least 8 characters",
+		},
+	},
+};
