@@ -72,7 +72,6 @@ export default function HomePage() {
 
 	return (
 		<div className="min-h-screen bg-gray-50">
-			<Navbar />
 			<section className="relative overflow-hidden pt-24 pb-32 md:pt-32 md:pb-40 bg-white">
 				<div className="absolute inset-x-0 bottom-0 h-1/2 bg-blue-50/50 mask-[radial-gradient(ellipse_at_top,transparent_20%,#000)] pointer-events-none"></div>
 

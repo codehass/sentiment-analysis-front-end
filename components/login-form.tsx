@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { FieldWithIcon } from "./signup-form";
 import { Lock, AtSign } from "lucide-react";
 import useAuth from "@/hooks/useAuth";
+import Navbar from "./Navbar";
 
 const BACKEND_URL =
 	process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
@@ -90,7 +91,7 @@ export function LoginForm({
 	return (
 		<div
 			className={cn(
-				"flex items-center justify-center min-h-screen bg-linear-to-b from-slate-50 to-slate-200 p-4",
+				"flex flex-col items-center justify-center min-h-screen bg-linear-to-b from-slate-50 to-slate-200 p-4",
 				className
 			)}
 			{...props}

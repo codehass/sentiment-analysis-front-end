@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import useAuth from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
+import Navbar from "./Navbar";
 
 interface Data {
 	name: string;
@@ -154,7 +155,9 @@ export function SignupForm() {
 
 	return (
 		<div
-			className={cn("flex items-center justify-center min-h-screen bg-gray-50")}
+			className={cn(
+				"flex flex-col items-center justify-center min-h-screen bg-gray-50"
+			)}
 		>
 			<Card className="w-full max-w-lg shadow-2xl border-none rounded-xl">
 				<CardHeader className="text-center p-2">

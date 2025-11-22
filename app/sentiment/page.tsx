@@ -124,7 +124,6 @@ export default function SentimentPage() {
 
 	return (
 		<div className="min-h-screen bg-gray-50">
-			<Navbar />
 			{/* Main Content */}
 			<div className="py-12 px-4 sm:px-6 lg:px-8">
 				<div className="max-w-3xl mx-auto">

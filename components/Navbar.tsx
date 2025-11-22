@@ -1,13 +1,14 @@
-"use client"; // <--- 1. CRITICAL: Mark this component as client-side
+"use client";
 
 import { Zap } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react"; // <-- Import hooks
+import { useRouter, usePathname } from "next/navigation"; // 1. Switched to usePathname
+import { useState, useEffect } from "react";
 
 function Navbar() {
 	const router = useRouter();
+	const pathname = usePathname(); // 2. Get the current pathname
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 
 	useEffect(() => {
@@ -23,6 +24,8 @@ function Navbar() {
 		localStorage.removeItem("token");
 		router.replace("/login");
 	};
+
+	const isAuthPage = pathname === "/login" || pathname === "/register";
 
 	return (
 		<nav className="sticky top-0 z-10 w-full bg-white shadow-md border-b border-gray-100">
@@ -45,24 +48,26 @@ function Navbar() {
 								Logout
 							</Button>
 						) : (
-							<div>
-								<Link href="/register" passHref>
-									<Button
-										variant="ghost"
-										className="text-gray-500 hover:text-blue-600"
-									>
-										Register
-									</Button>
-								</Link>
-								<Link href="/login" passHref>
-									<Button
-										variant="ghost"
-										className="text-gray-500 hover:text-blue-600"
-									>
-										Login
-									</Button>
-								</Link>
-							</div>
+							!isAuthPage && (
+								<div className="flex space-x-2">
+									<Link href="/register" passHref>
+										<Button
+											variant="ghost"
+											className="text-gray-500 hover:text-blue-600"
+										>
+											Register
+										</Button>
+									</Link>
+									<Link href="/login" passHref>
+										<Button
+											variant="ghost"
+											className="text-gray-500 hover:text-blue-600"
+										>
+											Login
+										</Button>
+									</Link>
+								</div>
+							)
 						)}
 					</div>
 				</div>
