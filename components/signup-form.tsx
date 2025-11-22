@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
 	User,
 	Mail,
@@ -28,6 +28,8 @@ import {
 	CheckCircle,
 	AlertTriangle,
 } from "lucide-react";
+import useAuth from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
 
 interface Data {
 	name: string;
@@ -99,6 +101,17 @@ export function SignupForm() {
 		text: string;
 	} | null>(null);
 
+	const isAuthenticated = useAuth();
+	const router = useRouter();
+
+	useEffect(() => {
+		if (isAuthenticated) {
+			router.replace("/");
+		} else {
+			router.replace("/register");
+		}
+	}, [isAuthenticated, router]);
+
 	async function onSubmit(data: Data) {
 		setMessage(null);
 
@@ -117,8 +130,6 @@ export function SignupForm() {
 					errorData?.detail ||
 					errorData?.message ||
 					`HTTP error! status: ${response.status}`;
-
-				// Removed the commented out setError example for cleaner code
 				throw new Error(errorMessage);
 			}
 
@@ -126,7 +137,6 @@ export function SignupForm() {
 				type: "success",
 				text: "Account created successfully! You can now log in.",
 			});
-			// Optionally redirect here
 		} catch (error) {
 			setMessage({
 				type: "error",
@@ -136,6 +146,10 @@ export function SignupForm() {
 						: "An unexpected error occurred.",
 			});
 		}
+	}
+
+	if (isAuthenticated) {
+		return null;
 	}
 
 	return (
@@ -154,7 +168,6 @@ export function SignupForm() {
 				</CardHeader>
 
 				<CardContent className="p-6 pt-0">
-					{/* Global Message/Feedback Box */}
 					{message && (
 						<div
 							className={cn(
@@ -175,7 +188,6 @@ export function SignupForm() {
 
 					<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 						<FieldGroup className="space-y-4">
-							{/* Field 1: Full Name (Cleaned up duplicates) */}
 							<FieldWithIcon
 								id="name"
 								label="Full Name"
@@ -185,8 +197,6 @@ export function SignupForm() {
 								rules={validationRules.name}
 								error={errors.name?.message}
 							/>
-
-							{/* Field 2: Username */}
 							<FieldWithIcon
 								id="username"
 								label="Username"
@@ -196,8 +206,6 @@ export function SignupForm() {
 								rules={validationRules.username}
 								error={errors.username?.message}
 							/>
-
-							{/* Field 3: Email */}
 							<FieldWithIcon
 								id="email"
 								label="Email"
@@ -208,8 +216,6 @@ export function SignupForm() {
 								rules={validationRules.email}
 								error={errors.email?.message}
 							/>
-
-							{/* Field 4: Password */}
 							<FieldWithIcon
 								id="password"
 								label="Password"
@@ -220,8 +226,6 @@ export function SignupForm() {
 								rules={validationRules.password}
 								error={errors.password?.message}
 							/>
-
-							{/* Login/Signup Action Button */}
 							<Button
 								type="submit"
 								disabled={isSubmitting}
@@ -254,8 +258,6 @@ export function SignupForm() {
 	);
 }
 
-// Define validation rules once
-// Use FieldValues type for better compatibility with RegisterOptions
 export const validationRules: Record<
 	keyof Data,
 	RegisterOptions<Data, keyof Data>
