@@ -13,8 +13,8 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import homepage from "../public/homepage.png";
+import Navbar from "@/components/Navbar";
 
-// --- Utility Feature Data ---
 const features = [
 	{
 		icon: Zap,
@@ -72,7 +72,7 @@ export default function HomePage() {
 
 	return (
 		<div className="min-h-screen bg-gray-50">
-			{/* 1. HERO SECTION */}
+			<Navbar />
 			<section className="relative overflow-hidden pt-24 pb-32 md:pt-32 md:pb-40 bg-white">
 				<div className="absolute inset-x-0 bottom-0 h-1/2 bg-blue-50/50 mask-[radial-gradient(ellipse_at_top,transparent_20%,#000)] pointer-events-none"></div>
 
@@ -108,7 +108,6 @@ export default function HomePage() {
 					</div>
 				</div>
 			</section>
-			{/* 2. FEATURES SECTION */}
 			<section className="px-6 bg-gray-50">
 				<div className="max-w-6xl mx-auto">
 					<h2 className="text-3xl font-bold text-gray-800 text-center mb-12">
@@ -139,8 +138,6 @@ export default function HomePage() {
 					</div>
 				</div>
 			</section>
-			---
-			{/* 4. SOCIAL PROOF / TESTIMONIALS (NEW SECTION) */}
 			<section className="px-6 py-20 bg-white">
 				<div className="max-w-6xl mx-auto">
 					<h2 className="text-3xl font-bold text-gray-900 text-center mb-12">
@@ -158,7 +155,6 @@ export default function HomePage() {
 									&quot;{testimonial.quote}&quot;
 								</p>
 								<div className="flex mt-6 items-center">
-									{/* Avatar Placeholder */}
 									<div className="h-10 w-10 bg-blue-200 rounded-full mr-4 shrink-0"></div>
 									<div>
 										<p className="font-semibold text-gray-900">
@@ -172,8 +168,6 @@ export default function HomePage() {
 					</div>
 				</div>
 			</section>
-			---
-			{/* 3. HOW IT WORKS */}
 			<section className="px-6 py-20 bg-gray-50 border-t border-gray-100">
 				<div className="max-w-5xl mx-auto">
 					<h2 className="text-3xl font-bold text-gray-900 text-center mb-14">
@@ -183,15 +177,12 @@ export default function HomePage() {
 					<ol className="relative space-y-12 max-w-3xl mx-auto">
 						{steps.map((step, index) => (
 							<li key={step.id} className="flex items-start">
-								{/* Step Circle & Line */}
 								<div className="shrink-0 w-10 h-10 rounded-full bg-blue-600 text-white font-bold text-lg flex items-center justify-center shadow-md mr-6 relative">
 									{index + 1}
 									{index < steps.length - 1 && (
 										<div className="absolute left-1/2 top-full h-12 w-0.5 bg-blue-200 transform -translate-x-1/2"></div>
 									)}
 								</div>
-
-								{/* Step Content */}
 								<div>
 									<h3 className="text-xl font-semibold text-gray-800">
 										Step {index + 1}
@@ -203,8 +194,6 @@ export default function HomePage() {
 					</ol>
 				</div>
 			</section>
-			---
-			{/* 5. FINAL CALL TO ACTION (NEW SECTION) */}
 			<section className="px-6 py-20 bg-blue-600 text-white shadow-inner">
 				<div className="max-w-3xl mx-auto text-center">
 					<h2 className="text-4xl font-extrabold mb-4">
@@ -222,8 +211,6 @@ export default function HomePage() {
 					</Link>
 				</div>
 			</section>
-			---
-			{/* FOOTER */}
 			<footer className="text-center py-8 bg-gray-50 border-t border-gray-200">
 				<div className="text-sm text-gray-500">
 					<p>© {currentYear} Sentiment Analyzer. All rights reserved.</p>
