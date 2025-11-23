@@ -16,10 +16,8 @@ import { useRouter } from "next/navigation";
 import { FieldWithIcon } from "./signup-form";
 import { Lock, AtSign } from "lucide-react";
 import useAuth from "@/hooks/useAuth";
-import Navbar from "./Navbar";
 
-const BACKEND_URL =
-	process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 type LoginData = {
 	username: string;
@@ -55,7 +53,8 @@ export function LoginForm({
 		formData.append("password", data.password);
 
 		try {
-			const response = await fetch(`${BACKEND_URL}/auth/login`, {
+			// const response = await fetch(`${BACKEND_URL}/auth/login`, {
+			const response = await fetch("/api/auth/login", {
 				method: "POST",
 				headers: { "Content-Type": "application/x-www-form-urlencoded" },
 				body: formData,

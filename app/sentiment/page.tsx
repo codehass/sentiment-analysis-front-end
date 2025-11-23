@@ -7,11 +7,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Zap, Loader2, AlertTriangle, Smile, Frown, Meh } from "lucide-react";
 import useAuth from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import Navbar from "@/components/Navbar";
 
-const BACKEND_URL =
-	process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 const getSentimentData = (sentiment: string, score: number) => {
 	const resultData = {
@@ -68,7 +65,8 @@ export default function SentimentPage() {
 		try {
 			const token = localStorage.getItem("token");
 
-			const res = await fetch(`${BACKEND_URL}/predict`, {
+			// const res = await fetch(`${BACKEND_URL}/predict`, {
+			const res = await fetch("/api/predict", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",

@@ -87,8 +87,7 @@ export const FieldWithIcon = <T extends FieldValues>({
 	);
 };
 
-const BACKEND_URL =
-	process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export function SignupForm() {
 	const {
@@ -117,7 +116,8 @@ export function SignupForm() {
 		setMessage(null);
 
 		try {
-			const response = await fetch(`${BACKEND_URL}/auth/register`, {
+			// const response = await fetch(`${BACKEND_URL}/auth/register`, {
+			const response = await fetch("/api/auth/register", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",

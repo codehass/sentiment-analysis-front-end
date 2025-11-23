@@ -8,7 +8,6 @@ services:
     env_file:
       - ./.env.local
     environment:
-      BACKEND_URL: ${BACKEND_URL}
       NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL}
     depends_on:
       - backend_app
@@ -26,7 +25,7 @@ services:
     environment:
       FRONTEND_URL: ${FRONTEND_URL}
       DATABASE_HOST: database
-      DATABASE_URL: postgres://postgres:123456@$database:5432/sentiment_analysis_db
+      DATABASE_URL: postgres://postgres:123456@database:5432/sentiment_analysis_db
     depends_on:
       - database
     networks:

@@ -16,8 +16,7 @@ type UserProfile = {
 	name: string;
 };
 
-const BACKEND_URL =
-	process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export default function MePage() {
 	const [user, setUser] = useState<UserProfile | null>(null);
@@ -31,7 +30,8 @@ export default function MePage() {
 		if (isAuthenticated) {
 			const token = localStorage.getItem("token");
 
-			fetch(`${BACKEND_URL}/users/me`, {
+			// fetch(`${BACKEND_URL}/users/me`, {
+			fetch("/api/users/me", {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},
