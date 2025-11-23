@@ -6,9 +6,9 @@ services:
     ports:
       - "3000:3000"
     env_file:
-      - ./.env.local
+      - ./.env
     environment:
-      NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL}
+      BACKEND_URL: ${BACKEND_URL}
     depends_on:
       - backend_app
     networks:
