@@ -112,3 +112,23 @@ cp .env.example .env
 ```shell
 docker compose up build --no cache
 ```
+
+## Available routes:
+
+- Home page: `/`
+- Register page: `http://localhost:3000/register`
+- Login page: `http://localhost:3000/login`
+- User profile page: `http://localhost:3000/users/me`
+- Sentiment analysis page: `http://localhost:3000/sentiment`
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a pull request or open an issue for any bugs or feature requests.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Contact
+
+For any questions or inquiries, please contact [hassan.elouardy06@gmail.com](mailto:hassan.elouardy06@gmail.com).
