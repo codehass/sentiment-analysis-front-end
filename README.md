@@ -1,36 +1,114 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sentiment Analysis App
 
-## Getting Started
+This is a simple sentiment analysis application that allows users to input text and receive feedback on whether the sentiment is positive, negative, or neutral. The app uses a pre-trained machine learning model to analyze the sentiment of the input text.
 
-First, run the development server:
+## Features
+
+- User-friendly interface for text input
+- Real-time sentiment analysis
+- Displays sentiment results with confidence scores
+
+## Installation
+
+### I. Clone the repositories:
+
+#### 1- Sentiment Analysis Backend
+
+- link to backend repository: [backend_repository_url](https://github.com/codehass/sentiment-analysis-back-end)
+
+- clone the backend repository:
+
+```bash
+git clone https://github.com/codehass/sentiment-analysis-back-end.git
+```
+
+```bash
+cd sentiment-analysis-back-end
+```
+
+- create a virtual environment and install dependencies:
+
+```bash
+python3 -m venv venv  # On Windows use `python -m venv venv`
+source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+pip install -r requirements.txt
+```
+
+- create a `.env` file in the backend directory and add any necessary environment variables.
+
+```
+cp .env.example .env
+```
+
+- create a database in your local PostgreSQL server and update the `.env` file with your database credentials.
+
+- run backend server:
+
+```bash
+fastapi dev app/main.py
+```
+
+    The backend server should now be running at `http://localhost:8000`.
+
+#### 2- Sentiment Analysis Frontend
+
+- Clone the frontend repository:
+
+```bash
+git clone git@github.com:codehass/sentiment-analysis-front-end.git
+```
+
+```bash
+cd sentiment-analysis-front-end
+```
+
+- Install the dependencies:
+
+```bash
+npm install
+```
+
+- Configure the backend API URL:
+
+  - Create a `.env` file in the frontend directory and add the backend API URL.
+
+```shell
+cp .env.example .env
+```
+
+- Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+    The frontend server should now be running at `http://localhost:3000` or given option.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 3 Run using docker
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1- Clone two repositories in the same directory example: `sentiment-analysis`
 
-## Learn More
+```shell
+  mkdir sentiment-analysis
+  cd sentiment-analysis
+  git clone https://github.com/codehass/sentiment-analysis-back-end.git
+  git clone git@github.com:codehass/sentiment-analysis-front-end.git
+```
 
-To learn more about Next.js, take a look at the following resources:
+2- Redirect to frontend repository
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```shell
+cd sentiment-analysis-front-end
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3- Create a `.env` file in the frontend directory and add the backend API URL.
 
-## Deploy on Vercel
+```shell
+cp .env.example .env
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+4- Run docker compose:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```shell
+docker compose up build --no cache
+```
